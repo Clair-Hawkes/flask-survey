@@ -12,22 +12,84 @@ responses = []
 
 @app.get('/')
 def home_page():
-    """takes user to home page"""
+    """Take user to home page"""
 
-    
     title = survey.title
     instructions = survey.instructions
 
-    return render_template("survey_start.html",
-    title=title,
-    instructions=instructions)
+    return render_template(
+        "survey_start.html",
+        title=title,
+        instructions=instructions)
+
 
 @app.post('/begin')
-def handle_question():
-    """take user to a question page, """
+def start_survey():
+    """Take user to a first question page"""
+
+    return redirect('/begin')
+
+
+@app.post('/answer')
+def handle_answer():
+    """Log answer and redirect user to question page"""
+
+    user_choice = request.form.get('answer')
+    responses.append(user_choice)
+
+    return redirect('/begin')
+
+
+@app.get('/begin')
+def handle_next():
+    """Takes user to next cycled question page.
+    Or take user to survey completion page"""
 
     questions = survey.questions
-    question = questions[0].question
 
-    return render_template("question.html",
-    question=question)
+    if (len(responses) == len(questions)):
+        return render_template('completion.html')
+
+    else:
+
+        question_num = len(responses)
+        question = questions[question_num].question
+        list_of_choices = survey.questions[question_num].choices
+
+        return render_template("question.html",
+        question=question,choices=list_of_choices)
+
+
+
+
+
+# @app.post('/answer')
+# def handleAnswer():
+#     """Doc String"""
+
+#     choice = request.form
+#     print(choice)
+
+#     return render_template('completion.html')
+
+
+
+# @app.post('/begin')
+# def handle_question():
+#     """take user to a question page, """
+
+#     question_num = len(responses)
+
+#     questions = survey.questions
+#     question = questions[question_num].question
+
+#     list_of_choices = survey.questions[question_num].choices
+
+#     return render_template("question.html",
+#     question=question,choices=list_of_choices)
+
+
+
+
+
+
