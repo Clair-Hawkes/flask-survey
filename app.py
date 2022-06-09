@@ -14,10 +14,20 @@ responses = []
 def home_page():
     """takes user to home page"""
 
-    questions = survey.questions
+    
     title = survey.title
     instructions = survey.instructions
 
     return render_template("survey_start.html",
     title=title,
     instructions=instructions)
+
+@app.post('/begin')
+def handle_question():
+    """take user to a question page, """
+
+    questions = survey.questions
+    question = questions[0].question
+
+    return render_template("question.html",
+    question=question)
