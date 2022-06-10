@@ -4,7 +4,7 @@ from surveys import satisfaction_survey as survey
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "never-tell!"
-app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+# app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 debug = DebugToolbarExtension(app)
 
@@ -26,10 +26,10 @@ def home_page():
 @app.post('/begin')
 def start_survey():
     """Take user to a first question page"""
-    
+
     session['responses'] = []
     #{responses: []}
-    return redirect('/begin')
+    return redirect('/questions')
 
 
 @app.post('/answer')
@@ -42,15 +42,18 @@ def handle_answer():
     responses.append(user_choice)
     session['responses'] = responses
 
-    return redirect('/begin')
+    return redirect('/questions')
 
 
-@app.get('/begin')
+@app.get('/questions')
 def handle_next():
     """Takes user to next cycled question page.
     Or take user to survey completion page"""
 
     questions = survey.questions
+
+    if (session.get('responses') == None):
+        return redirect('/')
 
     if (len(session['responses']) == len(questions)):
         return render_template('completion.html')
@@ -61,8 +64,10 @@ def handle_next():
         question = questions[question_num].question
         list_of_choices = survey.questions[question_num].choices
 
-        return render_template("question.html",
-        question=question,choices=list_of_choices)
+        return render_template(
+            "question.html",
+            question=question,
+            choices=list_of_choices)
 
 
 
