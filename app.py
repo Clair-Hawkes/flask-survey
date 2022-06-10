@@ -27,6 +27,8 @@ def home_page():
 def start_survey():
     """Take user to a first question page"""
 
+
+
     return redirect('/begin')
 
 
