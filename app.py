@@ -8,7 +8,7 @@ app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 debug = DebugToolbarExtension(app)
 
-responses = []
+#responses = []
 
 @app.get('/')
 def home_page():
@@ -26,9 +26,9 @@ def home_page():
 @app.post('/begin')
 def start_survey():
     """Take user to a first question page"""
-
-
-
+    
+    session['responses'] = []
+    #{responses: []}
     return redirect('/begin')
 
 
@@ -37,7 +37,10 @@ def handle_answer():
     """Log answer and redirect user to question page"""
 
     user_choice = request.form.get('answer')
+
+    responses = session['responses']
     responses.append(user_choice)
+    session['responses'] = responses
 
     return redirect('/begin')
 
@@ -49,12 +52,12 @@ def handle_next():
 
     questions = survey.questions
 
-    if (len(responses) == len(questions)):
+    if (len(session['responses']) == len(questions)):
         return render_template('completion.html')
 
     else:
 
-        question_num = len(responses)
+        question_num = len(session['responses'])
         question = questions[question_num].question
         list_of_choices = survey.questions[question_num].choices
 
